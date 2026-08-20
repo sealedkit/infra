@@ -1,0 +1,108 @@
+---
+mail_hostname: mail.sealedkit.com
+
+mail_domains:
+  - sealedkit.com
+
+mail_origin: sealedkit.com
+
+mail_dkim_selector: default
+mail_dkim_dir: /var/lib/rspamd/dkim
+mail_postmaster: postmaster@sealedkit.com
+mail_dovecot_version: "2.4.1"
+mail_rspamd_upstream_suite: ""
+
+mail_accounts: "{{ vault_mail_accounts }}"
+mail_aliases: "{{ vault_mail_aliases }}"
+
+mail_required_aliases:
+  - abuse
+  - caa
+  - contact
+  - dmarc
+  - postmaster
+  - root
+  - security
+  - tlsrpt
+
+mail_vmail_uid: 5000
+mail_vmail_home: /var/vmail
+mail_postfix_maps:
+  - vmailbox
+  - valias
+  - slogin
+
+mail_dovecot_conf: /etc/dovecot/dovecot.conf
+mail_sieve_dir: /etc/dovecot/sieve
+mail_sieve_pipe_dir: /usr/lib/dovecot/sieve-pipe
+mail_sieve_scripts:
+  - spam
+  - report-spam
+  - report-ham
+
+mail_rspamd_controller_bind: 127.0.0.1:11334
+
+mail_message_size_limit: 52428800
+mail_queue_lifetime: 5d
+
+mail_dnsbl_sites:
+  - zen.spamhaus.org*3
+  - bl.spamcop.net*2
+  - list.dnswl.org=127.0.[0..255].0*-2
+  - list.dnswl.org=127.0.[0..255].1*-3
+  - list.dnswl.org=127.0.[0..255].2*-4
+  - list.dnswl.org=127.0.[0..255].3*-5
+mail_dnsbl_threshold: 3
+mail_dnsbl_allowlist_threshold: -1
+
+mail_client_connection_count_limit: 20
+mail_client_connection_rate_limit: 30
+mail_client_message_rate_limit: 60
+mail_client_recipient_rate_limit: 200
+mail_client_auth_rate_limit: 20
+
+mail_mtasts_root: /var/www/mta-sts
+mail_mtasts_mode: enforce
+mail_mtasts_max_age: 31557600
+
+mail_caddy_storage: /var/lib/caddy/.local/share/caddy
+mail_caddy_acme_dir: https://acme-v02.api.letsencrypt.org/directory
+mail_caddy_ca: >-
+  {{ mail_caddy_acme_dir | regex_replace('^https?://', '') | lower
+     | regex_replace('[^A-Za-z0-9_.-]', '-') }}
+mail_caddy_cert_base: >-
+  {{ mail_caddy_storage }}/certificates/{{ mail_caddy_ca }}/{{ mail_hostname }}/{{ mail_hostname }}
+mail_cert_dir: /etc/ssl/mail
+
+mail_sshd_dropin: /etc/ssh/sshd_config.d/10-mail.conf
+mail_sshd_settings:
+  AllowAgentForwarding: "no"
+  AuthenticationMethods: publickey
+  KbdInteractiveAuthentication: "no"
+  MaxAuthTries: "3"
+  PasswordAuthentication: "no"
+  PermitEmptyPasswords: "no"
+  PermitRootLogin: "no"
+  PubkeyAuthentication: "yes"
+  X11Forwarding: "no"
+
+mail_fail2ban_banaction: ufw
+mail_fail2ban_bantime: 1h
+mail_fail2ban_findtime: 10m
+mail_fail2ban_maxretry: 5
+mail_fail2ban_jails:
+  - sshd
+  - postfix
+  - postfix-sasl
+  - dovecot
+
+mail_manage_firewall: true
+mail_firewall_ports:
+  - 22
+  - 25
+  - 80
+  - 443
+  - 465
+  - 587
+  - 993
+  - 4190

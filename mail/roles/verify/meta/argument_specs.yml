@@ -1,0 +1,17 @@
+---
+argument_specs:
+  main:
+    short_description: Check the published DNS records against the deployed host
+    options:
+      mail_domains:
+        type: list
+        required: true
+      mail_mtasts_root:
+        type: str
+        required: true
+      mail_dkim_dir:
+        type: str
+        required: true
+      mail_dkim_selector:
+        type: str
+        required: true

@@ -1,0 +1,43 @@
+---
+- name: Create the certificate directory
+  ansible.builtin.file:
+    path: "{{ mail_cert_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install the certificate sync script
+  ansible.builtin.template:
+    src: sync-mail-certs.j2
+    dest: /usr/local/sbin/sync-mail-certs
+    mode: "0755"
+
+- name: Install the certificate sync units
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: /etc/systemd/system/{{ item }}
+    mode: "0644"
+  loop:
+    - mail-certs.service
+    - mail-certs.path
+    - mail-certs.timer
+  notify: Reload systemd
+
+- name: Flush handlers so the units are known before enabling
+  ansible.builtin.meta: flush_handlers
+
+- name: Sync the certificate
+  ansible.builtin.command:
+    cmd: /usr/local/sbin/sync-mail-certs
+  register: tls_cert_sync
+  changed_when: "'updated' in tls_cert_sync.stdout"
+
+- name: Enable the certificate sync units
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - mail-certs.path
+    - mail-certs.timer

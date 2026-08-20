@@ -1,0 +1,14 @@
+---
+argument_specs:
+  main:
+    short_description: Copy the Caddy-issued certificate into place for postfix and dovecot
+    options:
+      mail_hostname:
+        type: str
+        required: true
+      mail_cert_dir:
+        type: str
+        required: true
+      mail_caddy_cert_base:
+        type: str
+        required: true

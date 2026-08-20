@@ -1,0 +1,82 @@
+---
+- name: Read the deployed MTA-STS policy
+  ansible.builtin.slurp:
+    src: "{{ mail_mtasts_root }}/.well-known/mta-sts.txt"
+  register: verify_mtasts_policy
+
+- name: Derive the MTA-STS id from the deployed policy
+  ansible.builtin.set_fact:
+    verify_mtasts_id: "{{ (verify_mtasts_policy.content | b64decode | hash('sha256'))[:16] }}"
+
+- name: Resolve the authoritative nameservers
+  ansible.builtin.command:
+    cmd: dig +short NS {{ item }}
+  loop: "{{ mail_domains }}"
+  register: verify_authoritative_ns
+  changed_when: false
+  check_mode: false
+  failed_when: verify_authoritative_ns.stdout_lines | length == 0
+
+- name: Resolve the published MTA-STS records
+  ansible.builtin.command:
+    cmd: dig +short TXT _mta-sts.{{ item }} @{{ verify_authoritative_ns.results[index].stdout_lines[0] }}
+  loop: "{{ mail_domains }}"
+  loop_control:
+    index_var: index
+  register: verify_mtasts_published
+  changed_when: false
+  check_mode: false
+
+- name: Assert the published MTA-STS id matches the deployed policy
+  ansible.builtin.assert:
+    that:
+      - >-
+        item.stdout | replace('"', '') | replace(' ', '')
+        | regex_search('id=[A-Za-z0-9]+') == 'id=' ~ verify_mtasts_id
+    fail_msg: >-
+      _mta-sts.{{ item.item }} publishes
+      {{ item.stdout | replace('"', '') | replace(' ', '') | regex_search('id=[A-Za-z0-9]+') | default('no id', true) }}
+      but the deployed policy hashes to id={{ verify_mtasts_id }}. Set
+      "v=STSv1; id={{ verify_mtasts_id }}" in dns/zones/{{ item.item }}.yaml and
+      let the DNS workflow apply it, then re-run.
+  loop: "{{ verify_mtasts_published.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+
+- name: Read the local DKIM public records
+  ansible.builtin.slurp:
+    src: "{{ mail_dkim_dir }}/{{ item }}.{{ mail_dkim_selector }}.txt"
+  loop: "{{ mail_domains }}"
+  register: verify_dkim_local
+
+- name: Resolve the published DKIM records
+  ansible.builtin.command:
+    cmd: >-
+      dig +short TXT {{ mail_dkim_selector }}._domainkey.{{ item }}
+      @{{ verify_authoritative_ns.results[index].stdout_lines[0] }}
+  loop: "{{ mail_domains }}"
+  loop_control:
+    index_var: index
+  register: verify_dkim_published
+  changed_when: false
+  check_mode: false
+
+- name: Assert the published DKIM keys match the ones on the host
+  ansible.builtin.assert:
+    that:
+      - >-
+        verify_dkim_published.results[index].stdout
+        | replace('"', '') | replace(' ', '') | regex_search('p=[A-Za-z0-9+/=]+')
+        == item.content | b64decode
+        | replace('"', '') | replace(' ', '') | replace('\t', '') | replace('\n', '')
+        | regex_search('p=[A-Za-z0-9+/=]+')
+    fail_msg: >-
+      {{ mail_dkim_selector }}._domainkey.{{ item.item }} does not match
+      {{ mail_dkim_dir }}/{{ item.item }}.{{ mail_dkim_selector }}.txt on the
+      host, so outbound mail from {{ item.item }} will fail DKIM. Publish the
+      record shown by the rspamd role earlier in this run to
+      dns/zones/{{ item.item }}.yaml.
+  loop: "{{ verify_dkim_local.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+    index_var: index

@@ -1,0 +1,20 @@
+---
+argument_specs:
+  main:
+    short_description: Rspamd filtering, DKIM signing and the controller
+    options:
+      mail_domains:
+        type: list
+        required: true
+      mail_dkim_dir:
+        type: str
+        required: true
+      mail_dkim_selector:
+        type: str
+        required: true
+      mail_rspamd_controller_bind:
+        type: str
+        required: true
+      vault_rspamd_controller_password:
+        type: str
+        required: true

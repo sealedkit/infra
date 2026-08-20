@@ -1,0 +1,6 @@
+{% for account in mail_accounts %}
+{{ account.address }} {{ account.address }}
+{% endfor %}
+{% for alias in mail_aliases %}
+{{ alias.source }} {{ alias.destination }}
+{% endfor %}

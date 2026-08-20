@@ -1,0 +1,56 @@
+---
+argument_specs:
+  main:
+    short_description: Postfix MTA, submission and lookup tables
+    options:
+      mail_hostname:
+        type: str
+        required: true
+      mail_origin:
+        type: str
+        required: true
+      mail_domains:
+        type: list
+        required: true
+      mail_cert_dir:
+        type: str
+        required: true
+      mail_accounts:
+        type: list
+        required: true
+      mail_aliases:
+        type: list
+        required: true
+      mail_postfix_maps:
+        type: list
+        required: true
+      mail_message_size_limit:
+        type: int
+        required: true
+      mail_queue_lifetime:
+        type: str
+        required: true
+      mail_dnsbl_sites:
+        type: list
+        required: true
+      mail_dnsbl_threshold:
+        type: int
+        required: true
+      mail_dnsbl_allowlist_threshold:
+        type: int
+        required: true
+      mail_client_connection_count_limit:
+        type: int
+        required: true
+      mail_client_connection_rate_limit:
+        type: int
+        required: true
+      mail_client_message_rate_limit:
+        type: int
+        required: true
+      mail_client_recipient_rate_limit:
+        type: int
+        required: true
+      mail_client_auth_rate_limit:
+        type: int
+        required: true

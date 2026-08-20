@@ -1,0 +1,3 @@
+{% for account in mail_accounts %}
+{{ account.address }} {{ account.address.split('@')[1] }}/{{ account.address.split('@')[0] }}/
+{% endfor %}

@@ -1,0 +1,45 @@
+---
+- name: Write main.cf
+  ansible.builtin.template:
+    src: main.cf.j2
+    dest: /etc/postfix/main.cf
+    mode: "0644"
+  notify: Restart postfix
+
+- name: Write master.cf
+  ansible.builtin.copy:
+    src: master.cf
+    dest: /etc/postfix/master.cf
+    mode: "0644"
+  notify: Restart postfix
+
+- name: Write the submission header checks
+  ansible.builtin.copy:
+    src: submission_header_checks
+    dest: /etc/postfix/submission_header_checks
+    mode: "0644"
+  notify: Restart postfix
+
+- name: Write the lookup tables
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: /etc/postfix/{{ item }}
+    mode: "0644"
+  loop: "{{ mail_postfix_maps }}"
+  notify:
+    - Rebuild the lookup tables
+    - Restart postfix
+
+- name: Flush handlers so the maps are built before postfix reads them
+  ansible.builtin.meta: flush_handlers
+
+- name: Check the configuration
+  ansible.builtin.command:
+    cmd: postfix check
+  changed_when: false
+
+- name: Enable postfix
+  ansible.builtin.systemd_service:
+    name: postfix
+    state: started
+    enabled: true

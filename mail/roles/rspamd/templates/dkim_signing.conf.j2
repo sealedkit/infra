@@ -1,0 +1,6 @@
+path = "{{ mail_dkim_dir }}/$domain.$selector.key";
+selector = "{{ mail_dkim_selector }}";
+allow_username_mismatch = false;
+use_domain = "header";
+sign_authenticated = true;
+sign_local = true;

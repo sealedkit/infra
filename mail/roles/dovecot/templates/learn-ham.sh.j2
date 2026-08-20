@@ -1,0 +1,3 @@
+#!/bin/sh
+/usr/bin/rspamc -h {{ mail_rspamd_controller_bind }} learn_ham || logger -t learn-ham "rspamc learn_ham failed"
+exit 0

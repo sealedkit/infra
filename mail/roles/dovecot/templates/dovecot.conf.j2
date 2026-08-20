@@ -1,0 +1,144 @@
+dovecot_config_version = {{ mail_dovecot_version }}
+dovecot_storage_version = {{ mail_dovecot_version }}
+
+protocols {
+  imap = yes
+  lmtp = yes
+  sieve = yes
+}
+
+mail_uid = vmail
+mail_gid = vmail
+mail_home = {{ mail_vmail_home }}/%{user | domain}/%{user | username}
+mail_driver = maildir
+mail_path = ~/Maildir
+
+ssl = required
+ssl_server_cert_file = {{ mail_cert_dir }}/fullchain.pem
+ssl_server_key_file = {{ mail_cert_dir }}/privkey.pem
+ssl_min_protocol = TLSv1.2
+
+auth_mechanisms = plain login
+auth_allow_cleartext = no
+auth_username_format = %{user | lower}
+
+passdb passwd-file {
+  passwd_file_path = /etc/dovecot/users
+}
+
+userdb static {
+  fields {
+    uid = vmail
+    gid = vmail
+    home = {{ mail_vmail_home }}/%{user | domain}/%{user | username}
+  }
+}
+
+protocol lmtp {
+  mail_plugins {
+    sieve = yes
+  }
+  postmaster_address = {{ mail_postmaster }}
+}
+
+protocol imap {
+  mail_plugins {
+    imap_sieve = yes
+  }
+}
+
+sieve_plugins {
+  sieve_imapsieve = yes
+  sieve_extprograms = yes
+}
+
+sieve_global_extensions {
+  vnd.dovecot.pipe = yes
+  vnd.dovecot.environment = yes
+}
+
+sieve_pipe_bin_dir = {{ mail_sieve_pipe_dir }}
+
+mailbox Junk {
+  sieve_script report-spam {
+    type = before
+    cause = copy
+    path = {{ mail_sieve_dir }}/report-spam.sieve
+  }
+}
+
+imapsieve_from Junk {
+  sieve_script report-ham {
+    type = before
+    cause = copy
+    path = {{ mail_sieve_dir }}/report-ham.sieve
+  }
+}
+
+service lmtp {
+  unix_listener /var/spool/postfix/private/dovecot-lmtp {
+    mode = 0600
+    user = postfix
+    group = postfix
+  }
+}
+
+service auth {
+  unix_listener /var/spool/postfix/private/auth {
+    mode = 0660
+    user = postfix
+    group = postfix
+  }
+
+  unix_listener auth-userdb {
+    mode = 0660
+    user = vmail
+    group = vmail
+  }
+}
+
+service managesieve-login {
+  inet_listener sieve {
+    port = 4190
+  }
+}
+
+sieve_script spam {
+  type = before
+  path = {{ mail_sieve_dir }}/spam.sieve
+}
+
+sieve_script personal {
+  type = personal
+  path = {{ mail_vmail_home }}/%{user | domain}/%{user | username}/sieve
+  active_path = {{ mail_vmail_home }}/%{user | domain}/%{user | username}/.dovecot.sieve
+}
+
+namespace inbox {
+  inbox = yes
+
+  mailbox Drafts {
+    auto = subscribe
+    special_use = \Drafts
+  }
+
+  mailbox Sent {
+    auto = subscribe
+    special_use = \Sent
+  }
+
+  mailbox Junk {
+    auto = subscribe
+    special_use = \Junk
+  }
+
+  mailbox Trash {
+    auto = subscribe
+    special_use = \Trash
+  }
+
+  mailbox Archive {
+    auto = subscribe
+    special_use = \Archive
+  }
+}

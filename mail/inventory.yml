@@ -1,0 +1,7 @@
+---
+all:
+  children:
+    mail:
+      hosts:
+        mail.sealedkit.com:
+          ansible_user: debian

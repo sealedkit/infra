@@ -1,0 +1,50 @@
+---
+- name: Mail server
+  hosts: mail
+  become: true
+  pre_tasks:
+    - name: Assert the vault holds real secrets
+      ansible.builtin.assert:
+        that:
+          - mail_accounts | map(attribute='password_hash') | select('search', 'REPLACE') | list | length == 0
+          - "'REPLACE' not in vault_rspamd_controller_password"
+        fail_msg: >-
+          group_vars/mail/vault.yml still has the placeholders from
+          vault.yml.example. Generate real values with
+          "docker run --rm -it dovecot/dovecot doveadm pw -s ARGON2ID" and
+          "docker run --rm -it rspamd/rspamd rspamadm pw", then
+          "ansible-vault edit group_vars/mail/vault.yml".
+
+    - name: Assert every account sits in a domain postfix accepts mail for
+      ansible.builtin.assert:
+        that:
+          - mail_foreign_domains | length == 0
+        fail_msg: >-
+          vault_mail_accounts holds an address in {{ mail_foreign_domains | join(', ') }},
+          which is not in mail_domains, so postfix would never accept mail for it.
+      vars:
+        mail_foreign_domains: >-
+          {{ mail_accounts | map(attribute='address') | map('regex_replace', '^.*@', '')
+             | list | difference(mail_domains) }}
+
+    - name: Assert the required role addresses are deliverable
+      ansible.builtin.assert:
+        that:
+          - mail_missing_aliases | length == 0
+        fail_msg: >-
+          No mailbox or alias covers {{ mail_missing_aliases | join(', ') }}.
+      vars:
+        mail_missing_aliases: >-
+          {{ mail_required_aliases | map('regex_replace', '$', '@' ~ mail_origin) | list
+             | difference(mail_aliases | map(attribute='source') | list
+                          + mail_accounts | map(attribute='address') | list) }}
+  roles:
+    - ssh
+    - base
+    - caddy
+    - tls
+    - postfix
+    - dovecot
+    - rspamd
+    - fail2ban
+    - verify

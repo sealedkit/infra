@@ -1,0 +1,10 @@
+---
+vault_mail_accounts:
+  - address: you@sealedkit.com
+    password_hash: "{ARGON2ID}$argon2id$v=19$m=65536,t=3,p=1$REPLACE"
+
+vault_mail_aliases:
+  - source: postmaster@sealedkit.com
+    destination: you@sealedkit.com
+
+vault_rspamd_controller_password: "$2$REPLACE"

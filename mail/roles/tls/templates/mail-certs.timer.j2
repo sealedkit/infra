@@ -1,0 +1,10 @@
+[Unit]
+Description=Hourly fallback check of the Caddy certificate for {{ mail_hostname }}
+
+[Timer]
+OnCalendar=hourly
+RandomizedDelaySec=10m
+Persistent=true
+
+[Install]
+WantedBy=timers.target

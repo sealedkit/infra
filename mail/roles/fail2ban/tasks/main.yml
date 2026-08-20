@@ -1,0 +1,48 @@
+---
+- name: Install fail2ban
+  ansible.builtin.apt:
+    name:
+      - fail2ban
+      - python3-systemd
+    state: present
+
+- name: Write the jail configuration
+  ansible.builtin.template:
+    src: jail.local.j2
+    dest: /etc/fail2ban/jail.local
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart fail2ban
+
+- name: Check the jail configuration
+  ansible.builtin.command:
+    cmd: fail2ban-client --test
+  changed_when: false
+  check_mode: false
+
+- name: Flush handlers so the jails are live before they are checked
+  ansible.builtin.meta: flush_handlers
+
+- name: Enable fail2ban
+  ansible.builtin.systemd_service:
+    name: fail2ban
+    state: started
+    enabled: true
+
+- name: Read the active jails
+  ansible.builtin.command:
+    cmd: fail2ban-client status
+  register: fail2ban_status
+  changed_when: false
+  check_mode: false
+
+- name: Assert every configured jail is active
+  ansible.builtin.assert:
+    that:
+      - item in fail2ban_status.stdout
+    fail_msg: >-
+      The {{ item }} jail is configured but fail2ban does not report it as
+      active, so nothing is being banned for it. Check "fail2ban-client status"
+      and the fail2ban journal on the host.
+  loop: "{{ mail_fail2ban_jails }}"

@@ -1,0 +1,6 @@
+[Unit]
+Description=Copy the Caddy-issued certificate for {{ mail_hostname }}
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/sync-mail-certs

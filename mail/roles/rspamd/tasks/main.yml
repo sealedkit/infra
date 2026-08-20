@@ -1,0 +1,73 @@
+---
+- name: Create the DKIM key directory
+  ansible.builtin.file:
+    path: "{{ mail_dkim_dir }}"
+    state: directory
+    owner: _rspamd
+    group: _rspamd
+    mode: "0750"
+
+- name: Generate the DKIM keys
+  ansible.builtin.shell:
+    cmd: >-
+      rspamadm dkim_keygen -s {{ mail_dkim_selector }} -b 2048 -d {{ item }}
+      -k {{ mail_dkim_dir }}/{{ item }}.{{ mail_dkim_selector }}.key
+      > {{ mail_dkim_dir }}/{{ item }}.{{ mail_dkim_selector }}.txt
+    creates: "{{ mail_dkim_dir }}/{{ item }}.{{ mail_dkim_selector }}.key"
+  loop: "{{ mail_domains }}"
+
+- name: Secure the DKIM keys
+  ansible.builtin.file:
+    path: "{{ mail_dkim_dir }}/{{ item }}.{{ mail_dkim_selector }}.key"
+    owner: _rspamd
+    group: _rspamd
+    mode: "0400"
+  loop: "{{ mail_domains }}"
+
+- name: Read the DKIM public records
+  ansible.builtin.slurp:
+    src: "{{ mail_dkim_dir }}/{{ item }}.{{ mail_dkim_selector }}.txt"
+  loop: "{{ mail_domains }}"
+  register: rspamd_dkim_records
+
+- name: Show the DKIM records to publish
+  ansible.builtin.debug:
+    msg: "{{ item.content | b64decode }}"
+  loop: "{{ rspamd_dkim_records.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+
+- name: Write the static rspamd configuration
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /etc/rspamd/local.d/{{ item }}
+    mode: "0644"
+  loop:
+    - options.inc
+    - redis.conf
+    - classifier-bayes.conf
+    - milter_headers.conf
+  notify: Restart rspamd
+
+- name: Write the DKIM signing configuration
+  ansible.builtin.template:
+    src: dkim_signing.conf.j2
+    dest: /etc/rspamd/local.d/dkim_signing.conf
+    mode: "0644"
+  notify: Restart rspamd
+
+- name: Write the rspamd controller password
+  ansible.builtin.template:
+    src: worker-controller.inc.j2
+    dest: /etc/rspamd/local.d/worker-controller.inc
+    owner: root
+    group: _rspamd
+    mode: "0640"
+  no_log: true
+  notify: Restart rspamd
+
+- name: Enable rspamd
+  ansible.builtin.systemd_service:
+    name: rspamd
+    state: started
+    enabled: true

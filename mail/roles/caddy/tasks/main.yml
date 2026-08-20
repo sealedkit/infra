@@ -1,0 +1,67 @@
+---
+- name: Create the apt keyring directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+
+- name: Add the Caddy signing key
+  ansible.builtin.get_url:
+    url: https://dl.cloudsmith.io/public/caddy/stable/gpg.key
+    dest: /etc/apt/keyrings/caddy-stable.asc
+    mode: "0644"
+
+- name: Add the Caddy repository
+  ansible.builtin.copy:
+    content: |
+      Types: deb
+      URIs: https://dl.cloudsmith.io/public/caddy/stable/deb/debian
+      Suites: any-version
+      Components: main
+      Signed-By: /etc/apt/keyrings/caddy-stable.asc
+    dest: /etc/apt/sources.list.d/caddy-stable.sources
+    mode: "0644"
+
+- name: Install Caddy
+  ansible.builtin.apt:
+    name: caddy
+    state: present
+    update_cache: true
+
+- name: Create the MTA-STS document root
+  ansible.builtin.file:
+    path: "{{ mail_mtasts_root }}/.well-known"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Write the MTA-STS policy
+  ansible.builtin.template:
+    src: mta-sts.txt.j2
+    dest: "{{ mail_mtasts_root }}/.well-known/mta-sts.txt"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Write the Caddyfile
+  ansible.builtin.template:
+    src: Caddyfile.j2
+    dest: /etc/caddy/Caddyfile
+    mode: "0644"
+    validate: caddy validate --adapter caddyfile --config %s
+  notify: Reload caddy
+
+- name: Enable caddy
+  ansible.builtin.systemd_service:
+    name: caddy
+    state: started
+    enabled: true
+
+- name: Flush handlers so the new Caddyfile is live before the certificate is awaited
+  ansible.builtin.meta: flush_handlers
+
+- name: Wait for the mail certificate to be issued
+  ansible.builtin.wait_for:
+    path: "{{ mail_caddy_cert_base }}.crt"
+    timeout: 180

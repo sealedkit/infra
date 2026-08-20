@@ -1,0 +1,38 @@
+---
+argument_specs:
+  main:
+    short_description: Dovecot IMAP, LMTP and the global sieve scripts
+    options:
+      mail_domains:
+        type: list
+        required: true
+      mail_accounts:
+        type: list
+        required: true
+      mail_cert_dir:
+        type: str
+        required: true
+      mail_vmail_home:
+        type: str
+        required: true
+      mail_postmaster:
+        type: str
+        required: true
+      mail_dovecot_conf:
+        type: str
+        required: true
+      mail_dovecot_version:
+        type: str
+        required: true
+      mail_sieve_dir:
+        type: str
+        required: true
+      mail_sieve_pipe_dir:
+        type: str
+        required: true
+      mail_sieve_scripts:
+        type: list
+        required: true
+      mail_rspamd_controller_bind:
+        type: str
+        required: true

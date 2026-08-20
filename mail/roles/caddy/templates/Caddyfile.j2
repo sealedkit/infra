@@ -1,0 +1,26 @@
+{
+	cert_issuer acme {
+		dir {{ mail_caddy_acme_dir }}
+		profile shortlived
+	}
+	renewal_window_ratio 0.5
+}
+
+{{ mail_hostname }} {
+	redir / https://{{ mail_origin }}/ 308
+	respond 404
+}
+{% for domain in mail_domains %}
+
+mta-sts.{{ domain }} {
+	handle /.well-known/mta-sts.txt {
+		root * {{ mail_mtasts_root }}
+		file_server
+		header Content-Type "text/plain; charset=utf-8"
+	}
+	handle {
+		redir / https://{{ domain }}/ 308
+		respond 404
+	}
+}
+{% endfor %}

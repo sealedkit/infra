@@ -1,0 +1,147 @@
+---
+'':
+  - &origin_a
+    ttl: 300
+    type: A
+    values:
+      - 148.113.201.252
+  - &origin_aaaa
+    ttl: 300
+    type: AAAA
+    values:
+      - 2607:5300:205:200::7e21
+  - type: CAA
+    values:
+      - flags: 0
+        tag: iodef
+        value: 'mailto:caa@sealedkit.com'
+      - flags: 0
+        tag: issue
+        value: 'letsencrypt.org; validationmethods=http-01,tls-alpn-01; accounturi=https://acme-v02.api.letsencrypt.org/acme/acct/3621289961'
+      - flags: 0
+        tag: issuemail
+        value: ';'
+      - flags: 0
+        tag: issuevmc
+        value: ';'
+      - flags: 0
+        tag: issuewild
+        value: ';'
+  - &origin_https
+    type: HTTPS
+    value:
+      svcparams:
+        alpn:
+          - h2
+          - h3
+      svcpriority: 1
+      targetname: .
+  - type: MX
+    values:
+      - exchange: mail.sealedkit.com.
+        preference: 10
+  - type: TXT
+    values:
+      - v=spf1 a:mail.sealedkit.com -all
+
+'*':
+  - type: CAA
+    values:
+      - flags: 0
+        tag: iodef
+        value: 'mailto:caa@sealedkit.com'
+      - flags: 0
+        tag: issue
+        value: ';'
+      - flags: 0
+        tag: issuemail
+        value: ';'
+      - flags: 0
+        tag: issuevmc
+        value: ';'
+  - &no_mail_mx
+    type: MX
+    values:
+      - exchange: .
+        preference: 0
+  - &no_mail_txt
+    type: TXT
+    values:
+      - v=spf1 -all
+
+'*._domainkey':
+  type: TXT
+  values:
+    - v=DKIM1\; p=
+
+_dmarc:
+  type: TXT
+  values:
+    - v=DMARC1\; p=reject\; sp=reject\; adkim=s\; aspf=s\; rua=mailto:dmarc@sealedkit.com
+
+_mta-sts:
+  type: TXT
+  values:
+    - v=STSv1\; id=1ec24dbc985c80bf
+
+_smtp._tls:
+  type: TXT
+  values:
+    - v=TLSRPTv1\; rua=mailto:tlsrpt@sealedkit.com
+
+default._domainkey:
+  type: TXT
+  values:
+    - v=DKIM1\; k=rsa\; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3jHOupbqYP1AkSrLrvuN8m0UubaJHzttSGJqiXZoZd26Dzu74v6564VmkGfc/rBwhk/VbcXfeRWpP+rH2QP7dmX3u/uASJq9mX6IaPox9fVeRWBcTbzE+BO3PzaCN4+jQp7kMLRZTiZMWHkvJDFrZaa6HNlTsn4IR/JTMZt0BEatK/sxOaHGbmaCFeIlwrWm1mrVp79PD/OnlJ+eVRewsljw+egPCg72jb0HKjCf89z8RAsRTjxgOqEr8WtCBZ+3T4auFpclV8izPHnO0RgS6+m49WT588zAFDEhLcl6b8kkEq18zKkISwKgL68ePQjyKf6P0k7x97FfDAx2sYDgIwIDAQAB
+
+leaf: &origin
+  - *origin_a
+  - *origin_aaaa
+  - *origin_https
+  - *no_mail_mx
+  - *no_mail_txt
+
+leaf-api: *origin
+
+mail:
+  - &mail_a
+    ttl: 300
+    type: A
+    values:
+      - 51.222.24.101
+  - &mail_aaaa
+    ttl: 300
+    type: AAAA
+    values:
+      - 2607:5300:205:200::531e
+  - &mail_caa
+    type: CAA
+    values:
+      - flags: 0
+        tag: iodef
+        value: 'mailto:caa@sealedkit.com'
+      - flags: 0
+        tag: issue
+        value: 'letsencrypt.org; validationmethods=http-01,tls-alpn-01; accounturi=https://acme-v02.api.letsencrypt.org/acme/acct/3634546521'
+      - flags: 0
+        tag: issuemail
+        value: ';'
+      - flags: 0
+        tag: issuevmc
+        value: ';'
+      - flags: 0
+        tag: issuewild
+        value: ';'
+  - *no_mail_mx
+  - type: TXT
+    values:
+      - v=spf1 a -all
+
+mta-sts:
+  - *mail_a
+  - *mail_aaaa
+  - *mail_caa
+  - *no_mail_mx
+  - *no_mail_txt
+
+www: *origin

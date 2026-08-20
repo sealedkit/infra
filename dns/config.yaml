@@ -1,0 +1,34 @@
+---
+manager:
+  max_workers: 4
+  plan_outputs:
+    logger:
+      class: octodns.provider.plan.PlanLogger
+      level: info
+    json:
+      class: octodns.provider.plan.PlanJson
+      output_filename: plan.json
+
+providers:
+  config:
+    class: octodns.provider.yaml.YamlProvider
+    directory: ./zones
+    default_ttl: 3600
+    enforce_order: true
+    escaped_semicolons: true
+
+  cloudflare:
+    class: octodns_cloudflare.CloudflareProvider
+    token: env/CLOUDFLARE_API_TOKEN
+    pagerules: false
+    retry_count: 4
+    strict_supports: true
+    update_pcent_threshold: 1.0
+    delete_pcent_threshold: 1.0
+
+zones:
+  '*':
+    sources:
+      - config
+    targets:
+      - cloudflare

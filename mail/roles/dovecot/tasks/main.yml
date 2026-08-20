@@ -1,0 +1,75 @@
+---
+- name: Write the dovecot configuration
+  ansible.builtin.template:
+    src: dovecot.conf.j2
+    dest: "{{ mail_dovecot_conf }}"
+    mode: "0644"
+    validate: doveconf -c %s -n
+  notify: Restart dovecot
+
+- name: Write the user database
+  ansible.builtin.template:
+    src: users.j2
+    dest: /etc/dovecot/users
+    owner: root
+    group: dovecot
+    mode: "0640"
+  no_log: true
+  notify: Restart dovecot
+
+- name: Create the global sieve directory
+  ansible.builtin.file:
+    path: "{{ mail_sieve_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Write the global sieve scripts
+  ansible.builtin.copy:
+    src: "{{ item }}.sieve"
+    dest: "{{ mail_sieve_dir }}/{{ item }}.sieve"
+    owner: root
+    group: root
+    mode: "0644"
+  loop: "{{ mail_sieve_scripts }}"
+  notify:
+    - Compile the global sieve scripts
+    - Restart dovecot
+
+- name: Create the sieve pipe binary directory
+  ansible.builtin.file:
+    path: "{{ mail_sieve_pipe_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install the rspamd learning scripts
+  ansible.builtin.template:
+    src: "{{ item }}.sh.j2"
+    dest: "{{ mail_sieve_pipe_dir }}/{{ item }}.sh"
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - learn-spam
+    - learn-ham
+
+- name: Create the per-domain mail directories
+  ansible.builtin.file:
+    path: "{{ mail_vmail_home }}/{{ item }}"
+    state: directory
+    owner: vmail
+    group: vmail
+    mode: "0750"
+  loop: "{{ mail_domains }}"
+
+- name: Flush handlers so the compiled script is in place before dovecot runs
+  ansible.builtin.meta: flush_handlers
+
+- name: Enable dovecot
+  ansible.builtin.systemd_service:
+    name: dovecot
+    state: started
+    enabled: true

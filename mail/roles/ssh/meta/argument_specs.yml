@@ -1,0 +1,11 @@
+---
+argument_specs:
+  main:
+    short_description: Harden sshd through a drop-in and confirm it takes effect
+    options:
+      mail_sshd_dropin:
+        type: str
+        required: true
+      mail_sshd_settings:
+        type: dict
+        required: true

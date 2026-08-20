@@ -1,0 +1,23 @@
+---
+argument_specs:
+  main:
+    short_description: Base packages, resolver and firewall for the mail host
+    options:
+      mail_hostname:
+        type: str
+        required: true
+      mail_vmail_uid:
+        type: int
+        required: true
+      mail_vmail_home:
+        type: str
+        required: true
+      mail_rspamd_upstream_suite:
+        type: str
+        required: true
+      mail_manage_firewall:
+        type: bool
+        required: true
+      mail_firewall_ports:
+        type: list
+        required: true

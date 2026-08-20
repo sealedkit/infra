@@ -1,0 +1,11 @@
+---
+- name: Rebuild the lookup tables
+  ansible.builtin.command:
+    cmd: postmap lmdb:/etc/postfix/{{ item }}
+  loop: "{{ mail_postfix_maps }}"
+  changed_when: true
+
+- name: Restart postfix
+  ansible.builtin.systemd_service:
+    name: postfix
+    state: restarted

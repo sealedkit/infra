@@ -1,0 +1,19 @@
+#!/bin/sh
+set -eu
+
+src="{{ mail_caddy_cert_base }}"
+dst="{{ mail_cert_dir }}"
+
+if cmp -s "$src.crt" "$dst/fullchain.pem" && cmp -s "$src.key" "$dst/privkey.pem"; then
+    exit 0
+fi
+
+install -m 0644 -o root -g root "$src.crt" "$dst/fullchain.pem.new"
+install -m 0640 -o root -g postfix "$src.key" "$dst/privkey.pem.new"
+mv "$dst/fullchain.pem.new" "$dst/fullchain.pem"
+mv "$dst/privkey.pem.new" "$dst/privkey.pem"
+
+systemctl try-reload-or-restart postfix
+systemctl try-reload-or-restart dovecot
+
+echo updated

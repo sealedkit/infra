@@ -1,0 +1,58 @@
+---
+- name: Look up the connecting user
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ ansible_user }}"
+
+- name: Stat the authorized keys of the connecting user
+  ansible.builtin.stat:
+    path: "{{ ansible_facts.getent_passwd[ansible_user][4] }}/.ssh/authorized_keys"
+  register: ssh_authorized_keys
+
+- name: Assert key based login works before passwords are turned off
+  ansible.builtin.assert:
+    that:
+      - ssh_authorized_keys.stat.exists
+      - ssh_authorized_keys.stat.size > 0
+    fail_msg: >-
+      {{ ansible_facts.getent_passwd[ansible_user][4] }}/.ssh/authorized_keys is missing or
+      empty, so disabling password authentication would lock {{ ansible_user }}
+      out of {{ inventory_hostname }}. Install the key first.
+
+- name: Write the sshd hardening drop-in
+  ansible.builtin.template:
+    src: sshd.conf.j2
+    dest: "{{ mail_sshd_dropin }}"
+    owner: root
+    group: root
+    mode: "0644"
+    validate: sshd -t -f %s
+  notify: Reload sshd
+
+- name: Check the whole sshd configuration
+  ansible.builtin.command:
+    cmd: sshd -t
+  changed_when: false
+  check_mode: false
+
+- name: Flush handlers so the reload happens before the settings are checked
+  ansible.builtin.meta: flush_handlers
+
+- name: Read the effective sshd configuration
+  ansible.builtin.command:
+    cmd: sshd -T
+  register: ssh_effective
+  changed_when: false
+  check_mode: false
+
+- name: Assert every hardening setting is in effect
+  ansible.builtin.assert:
+    that:
+      - (item.key ~ ' ' ~ item.value) | lower in ssh_effective.stdout_lines
+    fail_msg: >-
+      sshd does not report "{{ item.key }} {{ item.value }}" as effective. The
+      drop-in {{ mail_sshd_dropin }} may be overridden by another file in
+      /etc/ssh/sshd_config.d, or sshd_config may not include that directory.
+  loop: "{{ mail_sshd_settings | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"

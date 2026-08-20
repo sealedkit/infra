@@ -1,0 +1,8 @@
+[Unit]
+Description=Watch the Caddy certificate for {{ mail_hostname }}
+
+[Path]
+PathModified={{ mail_caddy_cert_base }}.crt
+
+[Install]
+WantedBy=paths.target
