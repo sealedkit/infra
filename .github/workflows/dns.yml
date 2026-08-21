@@ -4,8 +4,8 @@ on:
   pull_request:
     paths:
       - dns/**
-      - mail/group_vars/mail/main.yml
-      - mail/roles/mta_sts/templates/mta-sts.txt.j2
+      - ansible/group_vars/mail/main.yml
+      - ansible/roles/mta_sts/templates/mta-sts.txt.j2
       - .github/workflows/dns.yml
   push:
     branches:

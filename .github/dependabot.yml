@@ -11,6 +11,6 @@ updates:
       interval: weekly
 
   - package-ecosystem: uv
-    directory: /mail
+    directory: /ansible
     schedule:
       interval: weekly
