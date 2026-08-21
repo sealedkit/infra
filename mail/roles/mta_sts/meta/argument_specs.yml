@@ -1,13 +1,10 @@
 ---
 argument_specs:
   main:
-    short_description: Caddy serving ACME for the mail host and the MTA-STS policy
+    short_description: Publish the MTA-STS policy for Caddy to serve
     options:
       mail_hostname:
         type: str
-        required: true
-      mail_domains:
-        type: list
         required: true
       mail_mtasts_root:
         type: str
@@ -17,10 +14,4 @@ argument_specs:
         required: true
       mail_mtasts_max_age:
         type: int
-        required: true
-      mail_caddy_acme_dir:
-        type: str
-        required: true
-      mail_caddy_cert_base:
-        type: str
         required: true

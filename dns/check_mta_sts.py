@@ -12,7 +12,7 @@ from jinja2 import Environment, StrictUndefined
 REPO = Path(__file__).resolve().parent.parent
 ZONES = REPO / "dns" / "zones"
 GROUP_VARS = "mail/group_vars/mail/main.yml"
-TEMPLATE = "mail/roles/caddy/templates/mta-sts.txt.j2"
+TEMPLATE = "mail/roles/mta_sts/templates/mta-sts.txt.j2"
 ID = re.compile(r"\bid=([A-Za-z0-9]{1,32})\b")
 TIMEOUT = 15
 

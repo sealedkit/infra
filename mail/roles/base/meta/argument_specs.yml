@@ -15,6 +15,3 @@ argument_specs:
       mail_rspamd_upstream_suite:
         type: str
         required: true
-      mail_firewall_ports:
-        type: list
-        required: true

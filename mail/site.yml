@@ -41,6 +41,8 @@
   roles:
     - ssh
     - base
+    - firewall
+    - mta_sts
     - caddy
     - tls
     - postfix

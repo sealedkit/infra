@@ -1,0 +1,16 @@
+---
+- name: Create the MTA-STS document root
+  ansible.builtin.file:
+    path: "{{ mail_mtasts_root }}/.well-known"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Write the MTA-STS policy
+  ansible.builtin.template:
+    src: mta-sts.txt.j2
+    dest: "{{ mail_mtasts_root }}/.well-known/mta-sts.txt"
+    owner: root
+    group: root
+    mode: "0644"

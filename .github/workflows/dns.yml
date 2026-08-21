@@ -5,7 +5,7 @@ on:
     paths:
       - dns/**
       - mail/group_vars/mail/main.yml
-      - mail/roles/caddy/templates/mta-sts.txt.j2
+      - mail/roles/mta_sts/templates/mta-sts.txt.j2
       - .github/workflows/dns.yml
   push:
     branches:

@@ -24,25 +24,9 @@
 
 - name: Install Caddy
   ansible.builtin.apt:
-    name: caddy
+    name: caddy=2.11.4
     state: present
     update_cache: true
-
-- name: Create the MTA-STS document root
-  ansible.builtin.file:
-    path: "{{ mail_mtasts_root }}/.well-known"
-    state: directory
-    owner: root
-    group: root
-    mode: "0755"
-
-- name: Write the MTA-STS policy
-  ansible.builtin.template:
-    src: mta-sts.txt.j2
-    dest: "{{ mail_mtasts_root }}/.well-known/mta-sts.txt"
-    owner: root
-    group: root
-    mode: "0644"
 
 - name: Write the Caddyfile
   ansible.builtin.template:
@@ -57,11 +41,3 @@
     name: caddy
     state: started
     enabled: true
-
-- name: Flush handlers so the new Caddyfile is live before the certificate is awaited
-  ansible.builtin.meta: flush_handlers
-
-- name: Wait for the mail certificate to be issued
-  ansible.builtin.wait_for:
-    path: "{{ mail_caddy_cert_base }}.crt"
-    timeout: 180

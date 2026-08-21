@@ -80,7 +80,7 @@ fail2ban_jails:
   - postfix-sasl
   - dovecot
 
-mail_firewall_ports:
+firewall_ports:
   - 22
   - 25
   - 80

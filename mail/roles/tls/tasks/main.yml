@@ -1,4 +1,12 @@
 ---
+- name: Flush handlers so the new Caddyfile is live before the certificate is awaited
+  ansible.builtin.meta: flush_handlers
+
+- name: Wait for the mail certificate to be issued
+  ansible.builtin.wait_for:
+    path: "{{ mail_caddy_cert_base }}.crt"
+    timeout: 180
+
 - name: Create the certificate directory
   ansible.builtin.file:
     path: "{{ mail_cert_dir }}"

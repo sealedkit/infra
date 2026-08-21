@@ -1,0 +1,4 @@
+---
+argument_specs:
+  main:
+    short_description: Install Caddy and serve the playbook's Caddyfile
