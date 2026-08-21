@@ -4,12 +4,14 @@ on:
   pull_request:
     paths:
       - mail/**
+      - roles/**
       - .github/workflows/mail.yml
   push:
     branches:
       - main
     paths:
       - mail/**
+      - roles/**
       - .github/workflows/mail.yml
 
 defaults:
@@ -31,4 +33,4 @@ jobs:
       - run: uv sync --locked
       - run: uv run ansible-galaxy collection install -r requirements.yml
       - run: uv run ansible-playbook site.yml --syntax-check
-      - run: uv run ansible-lint
+      - run: uv run ansible-lint . ../roles

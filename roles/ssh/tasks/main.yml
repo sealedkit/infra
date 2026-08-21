@@ -22,7 +22,7 @@
 - name: Write the sshd hardening drop-in
   ansible.builtin.template:
     src: sshd.conf.j2
-    dest: "{{ mail_sshd_dropin }}"
+    dest: "{{ sshd_dropin }}"
     owner: root
     group: root
     mode: "0644"
@@ -51,8 +51,8 @@
       - (item.key ~ ' ' ~ item.value) | lower in ssh_effective.stdout_lines
     fail_msg: >-
       sshd does not report "{{ item.key }} {{ item.value }}" as effective. The
-      drop-in {{ mail_sshd_dropin }} may be overridden by another file in
+      drop-in {{ sshd_dropin }} may be overridden by another file in
       /etc/ssh/sshd_config.d, or sshd_config may not include that directory.
-  loop: "{{ mail_sshd_settings | dict2items }}"
+  loop: "{{ sshd_settings | dict2items }}"
   loop_control:
     label: "{{ item.key }}"

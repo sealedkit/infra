@@ -45,4 +45,4 @@
       The {{ item }} jail is configured but fail2ban does not report it as
       active, so nothing is being banned for it. Check "fail2ban-client status"
       and the fail2ban journal on the host.
-  loop: "{{ mail_fail2ban_jails }}"
+  loop: "{{ fail2ban_jails }}"

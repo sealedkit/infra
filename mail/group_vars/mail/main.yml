@@ -74,8 +74,8 @@ mail_caddy_cert_base: >-
   {{ mail_caddy_storage }}/certificates/{{ mail_caddy_ca }}/{{ mail_hostname }}/{{ mail_hostname }}
 mail_cert_dir: /etc/ssl/mail
 
-mail_sshd_dropin: /etc/ssh/sshd_config.d/10-mail.conf
-mail_sshd_settings:
+sshd_dropin: /etc/ssh/sshd_config.d/10-mail.conf
+sshd_settings:
   AllowAgentForwarding: "no"
   AuthenticationMethods: publickey
   KbdInteractiveAuthentication: "no"
@@ -86,11 +86,11 @@ mail_sshd_settings:
   PubkeyAuthentication: "yes"
   X11Forwarding: "no"
 
-mail_fail2ban_banaction: ufw
-mail_fail2ban_bantime: 1h
-mail_fail2ban_findtime: 10m
-mail_fail2ban_maxretry: 5
-mail_fail2ban_jails:
+fail2ban_banaction: ufw
+fail2ban_bantime: 1h
+fail2ban_findtime: 10m
+fail2ban_maxretry: 5
+fail2ban_jails:
   - sshd
   - postfix
   - postfix-sasl

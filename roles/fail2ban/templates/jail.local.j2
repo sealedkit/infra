@@ -1,0 +1,11 @@
+[DEFAULT]
+backend = systemd
+banaction = {{ fail2ban_banaction }}
+bantime = {{ fail2ban_bantime }}
+findtime = {{ fail2ban_findtime }}
+maxretry = {{ fail2ban_maxretry }}
+{% for jail in fail2ban_jails %}
+
+[{{ jail }}]
+enabled = true
+{% endfor %}

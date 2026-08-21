@@ -1,20 +1,20 @@
 ---
 argument_specs:
   main:
-    short_description: Ban repeated authentication failures against ssh, postfix and dovecot
+    short_description: Ban repeated authentication failures on the configured jails
     options:
-      mail_fail2ban_banaction:
+      fail2ban_banaction:
         type: str
         required: true
-      mail_fail2ban_bantime:
+      fail2ban_bantime:
         type: str
         required: true
-      mail_fail2ban_findtime:
+      fail2ban_findtime:
         type: str
         required: true
-      mail_fail2ban_maxretry:
+      fail2ban_maxretry:
         type: int
         required: true
-      mail_fail2ban_jails:
+      fail2ban_jails:
         type: list
         required: true
