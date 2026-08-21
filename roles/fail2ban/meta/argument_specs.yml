@@ -3,18 +3,6 @@ argument_specs:
   main:
     short_description: Ban repeated authentication failures on the configured jails
     options:
-      fail2ban_banaction:
-        type: str
-        required: true
-      fail2ban_bantime:
-        type: str
-        required: true
-      fail2ban_findtime:
-        type: str
-        required: true
-      fail2ban_maxretry:
-        type: int
-        required: true
       fail2ban_jails:
         type: list
         required: true

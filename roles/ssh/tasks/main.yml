@@ -20,9 +20,9 @@
       out of {{ inventory_hostname }}. Install the key first.
 
 - name: Write the sshd hardening drop-in
-  ansible.builtin.template:
-    src: sshd.conf.j2
-    dest: "{{ sshd_dropin }}"
+  ansible.builtin.copy:
+    src: sshd-hardening.conf
+    dest: /etc/ssh/sshd_config.d/10-hardening.conf
     owner: root
     group: root
     mode: "0644"
@@ -48,11 +48,9 @@
 - name: Assert every hardening setting is in effect
   ansible.builtin.assert:
     that:
-      - (item.key ~ ' ' ~ item.value) | lower in ssh_effective.stdout_lines
+      - item | lower in ssh_effective.stdout_lines
     fail_msg: >-
-      sshd does not report "{{ item.key }} {{ item.value }}" as effective. The
-      drop-in {{ sshd_dropin }} may be overridden by another file in
-      /etc/ssh/sshd_config.d, or sshd_config may not include that directory.
-  loop: "{{ sshd_settings | dict2items }}"
-  loop_control:
-    label: "{{ item.key }}"
+      sshd does not report "{{ item }}" as effective. The drop-in
+      /etc/ssh/sshd_config.d/10-hardening.conf may be overridden by another file
+      in /etc/ssh/sshd_config.d, or sshd_config may not include that directory.
+  loop: "{{ lookup('ansible.builtin.file', 'sshd-hardening.conf').splitlines() | select | list }}"

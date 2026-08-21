@@ -2,10 +2,3 @@
 argument_specs:
   main:
     short_description: Harden sshd through a drop-in and confirm it takes effect
-    options:
-      sshd_dropin:
-        type: str
-        required: true
-      sshd_settings:
-        type: dict
-        required: true
