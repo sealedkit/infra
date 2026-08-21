@@ -9,6 +9,3 @@ argument_specs:
       mail_cert_dir:
         type: str
         required: true
-      mail_caddy_cert_base:
-        type: str
-        required: true

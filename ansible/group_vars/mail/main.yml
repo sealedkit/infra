@@ -65,13 +65,6 @@ mail_mtasts_root: /var/www/mta-sts
 mail_mtasts_mode: enforce
 mail_mtasts_max_age: 31557600
 
-mail_caddy_storage: /var/lib/caddy/.local/share/caddy
-mail_caddy_acme_dir: https://acme-v02.api.letsencrypt.org/directory
-mail_caddy_ca: >-
-  {{ mail_caddy_acme_dir | regex_replace('^https?://', '') | lower
-     | regex_replace('[^A-Za-z0-9_.-]', '-') }}
-mail_caddy_cert_base: >-
-  {{ mail_caddy_storage }}/certificates/{{ mail_caddy_ca }}/{{ mail_hostname }}/{{ mail_hostname }}
 mail_cert_dir: /etc/ssl/mail
 
 fail2ban_jails:

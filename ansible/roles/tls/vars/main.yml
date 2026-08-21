@@ -1,0 +1,8 @@
+---
+tls_caddy_storage: /var/lib/caddy/.local/share/caddy
+tls_acme_dir: https://acme-v02.api.letsencrypt.org/directory
+tls_acme_ca: >-
+  {{ tls_acme_dir | regex_replace('^https?://', '') | lower
+     | regex_replace('[^A-Za-z0-9_.-]', '-') }}
+tls_cert_base: >-
+  {{ tls_caddy_storage }}/certificates/{{ tls_acme_ca }}/{{ mail_hostname }}/{{ mail_hostname }}

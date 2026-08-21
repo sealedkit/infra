@@ -1,6 +1,6 @@
 {
 	cert_issuer acme {
-		dir {{ mail_caddy_acme_dir }}
+		dir {{ tls_acme_dir }}
 		profile shortlived
 	}
 	renewal_window_ratio 0.5

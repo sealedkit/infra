@@ -4,7 +4,7 @@
 
 - name: Wait for the mail certificate to be issued
   ansible.builtin.wait_for:
-    path: "{{ mail_caddy_cert_base }}.crt"
+    path: "{{ tls_cert_base }}.crt"
     timeout: 180
 
 - name: Create the certificate directory

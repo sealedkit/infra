@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-src="{{ mail_caddy_cert_base }}"
+src="{{ tls_cert_base }}"
 dst="{{ mail_cert_dir }}"
 
 if cmp -s "$src.crt" "$dst/fullchain.pem" && cmp -s "$src.key" "$dst/privkey.pem"; then
