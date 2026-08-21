@@ -157,7 +157,6 @@
   ansible.builtin.apt:
     name: ufw
     state: present
-  when: mail_manage_firewall
 
 - name: Allow the mail and management ports
   community.general.ufw:
@@ -165,11 +164,9 @@
     port: "{{ item }}"
     proto: tcp
   loop: "{{ mail_firewall_ports }}"
-  when: mail_manage_firewall
 
 - name: Enable ufw
   community.general.ufw:
     state: enabled
     policy: deny
     direction: incoming
-  when: mail_manage_firewall

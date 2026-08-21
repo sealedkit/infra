@@ -96,7 +96,6 @@ fail2ban_jails:
   - postfix-sasl
   - dovecot
 
-mail_manage_firewall: true
 mail_firewall_ports:
   - 22
   - 25
