@@ -30,6 +30,7 @@
       - redis-server
       - unbound
       - ca-certificates
+      - openssl
       - bind9-dnsutils
     state: present
     update_cache: true

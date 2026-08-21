@@ -8,6 +8,14 @@ if cmp -s "$src.crt" "$dst/fullchain.pem" && cmp -s "$src.key" "$dst/privkey.pem
     exit 0
 fi
 
+cert_pub=$(openssl x509 -noout -pubkey -in "$src.crt")
+key_pub=$(openssl pkey -pubout -in "$src.key")
+
+if [ "$cert_pub" != "$key_pub" ]; then
+    echo "$src.crt and $src.key do not match, keeping the installed pair" >&2
+    exit 1
+fi
+
 install -m 0644 -o root -g root "$src.crt" "$dst/fullchain.pem.new"
 install -m 0640 -o root -g postfix "$src.key" "$dst/privkey.pem.new"
 mv "$dst/fullchain.pem.new" "$dst/fullchain.pem"
