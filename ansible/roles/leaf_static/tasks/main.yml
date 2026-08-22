@@ -1,0 +1,17 @@
+---
+- name: Create the static document root
+  ansible.builtin.file:
+    path: "{{ leaf_static_root }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Publish the static files
+  ansible.builtin.copy:
+    src: static/
+    dest: "{{ leaf_static_root }}/"
+    owner: root
+    group: root
+    mode: "0644"
+    directory_mode: "0755"

@@ -15,6 +15,7 @@
   roles:
     - ssh
     - firewall
+    - leaf_static
     - caddy
     - leaf
     - fail2ban
