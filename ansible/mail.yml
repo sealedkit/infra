@@ -49,4 +49,5 @@
     - dovecot
     - rspamd
     - fail2ban
+    - unattended_upgrades
     - verify

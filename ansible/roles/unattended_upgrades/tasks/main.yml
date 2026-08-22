@@ -1,0 +1,32 @@
+---
+- name: Install unattended-upgrades
+  ansible.builtin.apt:
+    name: unattended-upgrades
+    state: present
+
+- name: Restrict upgrades to the Debian stable and security origins
+  ansible.builtin.copy:
+    src: 50unattended-upgrades
+    dest: /etc/apt/apt.conf.d/50unattended-upgrades
+    mode: "0644"
+
+- name: Enable the periodic apt update and upgrade runs
+  ansible.builtin.copy:
+    src: 20auto-upgrades
+    dest: /etc/apt/apt.conf.d/20auto-upgrades
+    mode: "0644"
+
+- name: Enable the apt timers
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - apt-daily.timer
+    - apt-daily-upgrade.timer
+
+- name: Verify the configuration with a dry run
+  ansible.builtin.command:
+    cmd: unattended-upgrade --dry-run
+  changed_when: false
+  check_mode: false

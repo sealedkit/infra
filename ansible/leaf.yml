@@ -19,4 +19,5 @@
     - caddy
     - leaf
     - fail2ban
+    - unattended_upgrades
     - leaf_verify
