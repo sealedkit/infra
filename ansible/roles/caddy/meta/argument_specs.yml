@@ -6,3 +6,6 @@ argument_specs:
       caddy_caddyfile:
         type: str
         required: true
+      caddy_protocols:
+        type: str
+        required: true

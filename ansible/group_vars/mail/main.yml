@@ -75,6 +75,7 @@ fail2ban_jails:
   - dovecot
 
 caddy_caddyfile: Caddyfile-mail.j2
+caddy_protocols: h1 h2
 
 firewall_ports:
   - port: 22

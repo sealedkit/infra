@@ -8,6 +8,7 @@ leaf_www_host: www.sealedkit.com
 leaf_s3: "{{ vault_leaf_s3 }}"
 
 caddy_caddyfile: Caddyfile-leaf.j2
+caddy_protocols: h1 h2 h3
 leaf_static_root: /var/www/static
 
 fail2ban_jails:
