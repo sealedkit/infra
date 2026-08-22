@@ -43,7 +43,7 @@ RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
 SocketBindDeny=any
 SocketBindAllow=tcp:8080
 NoExecPaths=/
-ExecPaths=/opt/leaf/bin/server
+ExecPaths=/opt/leaf/bin/server /usr/lib /lib64
 UMask=0077
 
 [Install]
