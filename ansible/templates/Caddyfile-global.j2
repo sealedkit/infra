@@ -7,7 +7,7 @@
 }
 
 (baseline_headers) {
-	header ?Content-Security-Policy "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; webrtc 'block'; require-trusted-types-for 'script'; trusted-types 'none'"
+	header ?Content-Security-Policy "default-src 'none'; {{ caddy_csp_restrictions }}"
 	header Cross-Origin-Embedder-Policy "require-corp"
 	header Cross-Origin-Opener-Policy "same-origin"
 	header Cross-Origin-Resource-Policy "same-origin"

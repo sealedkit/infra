@@ -1,2 +1,5 @@
 ---
 caddy_acme_dir: https://acme-v02.api.letsencrypt.org/directory
+caddy_csp_restrictions: >-
+  base-uri 'none'; form-action 'none'; frame-ancestors 'none';
+  webrtc 'block'; require-trusted-types-for 'script'; trusted-types 'none'
