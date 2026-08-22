@@ -1,10 +1,4 @@
 ---
-- name: Install the runtime
-  ansible.builtin.apt:
-    name: openjdk-21-jre-headless
-    state: present
-    update_cache: true
-
 - name: Create the service user
   ansible.builtin.user:
     name: leaf
