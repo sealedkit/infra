@@ -4,13 +4,19 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
 
   - package-ecosystem: uv
     directory: /dns
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
 
   - package-ecosystem: uv
     directory: /ansible
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
