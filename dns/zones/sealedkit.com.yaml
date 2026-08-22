@@ -132,6 +132,14 @@ mail:
       - flags: 0
         tag: issuewild
         value: ';'
+  - &mail_https
+    type: HTTPS
+    value:
+      svcparams:
+        alpn:
+          - h2
+      svcpriority: 1
+      targetname: .
   - *no_mail_mx
   - type: TXT
     values:
@@ -141,6 +149,7 @@ mta-sts:
   - *mail_a
   - *mail_aaaa
   - *mail_caa
+  - *mail_https
   - *no_mail_mx
   - *no_mail_txt
 
