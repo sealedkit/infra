@@ -45,6 +45,7 @@ CapabilityBoundingSet=
 SystemCallArchitectures=native
 SystemCallFilter=@system-service
 SystemCallFilter=~@resources
+SystemCallFilter=~@privileged
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
 SocketBindDeny=any
 SocketBindAllow=tcp:8080
