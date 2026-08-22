@@ -14,10 +14,16 @@ EnvironmentFile=/etc/leaf/server.env
 ExecStart=/opt/leaf/bin/server
 Restart=on-failure
 RestartSec=5
+# Set here because the seccomp filter below takes prlimit64 away from the process itself.
+LimitNOFILE=65536
+MemoryHigh=512M
+MemoryMax=1G
+TasksMax=128
 
 NoNewPrivileges=true
 PrivateTmp=true
 PrivateUsers=true
+PrivateIPC=true
 PrivateDevices=true
 ProtectSystem=strict
 ProtectHome=true
