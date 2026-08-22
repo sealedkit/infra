@@ -107,14 +107,14 @@
 - name: Verify unbound validates DNSSEC
   ansible.builtin.command:
     cmd: dig @127.0.0.1 +dnssec +noall +comment {{ mail_hostname }} A
-  register: base_unbound_check
+  register: mail_base_unbound_check
   changed_when: false
-  failed_when: base_unbound_check.stdout is not search('flags:[^;]*\\bad\\b')
+  failed_when: mail_base_unbound_check.stdout is not search('flags:[^;]*\\bad\\b')
 
 - name: Check whether systemd-resolved is installed
   ansible.builtin.stat:
     path: /usr/lib/systemd/system/systemd-resolved.service
-  register: base_resolved_unit
+  register: mail_base_resolved_unit
 
 - name: Stop systemd-resolved
   ansible.builtin.systemd_service:
@@ -122,18 +122,18 @@
     state: stopped
     enabled: false
     masked: true
-  when: base_resolved_unit.stat.exists
+  when: mail_base_resolved_unit.stat.exists
 
 - name: Check whether resolv.conf is still a symlink
   ansible.builtin.stat:
     path: /etc/resolv.conf
-  register: base_resolv_conf
+  register: mail_base_resolv_conf
 
 - name: Drop the systemd-resolved resolv.conf symlink
   ansible.builtin.file:
     path: /etc/resolv.conf
     state: absent
-  when: base_resolv_conf.stat.islnk | default(false)
+  when: mail_base_resolv_conf.stat.islnk | default(false)
 
 - name: Point the resolver at unbound
   ansible.builtin.copy:
