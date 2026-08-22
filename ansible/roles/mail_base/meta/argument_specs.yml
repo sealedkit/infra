@@ -1,7 +1,7 @@
 ---
 argument_specs:
   main:
-    short_description: Base packages, resolver and firewall for the mail host
+    short_description: Mail stack packages, vmail user and DNSSEC resolver for the mail host
     options:
       mail_hostname:
         type: str

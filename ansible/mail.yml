@@ -41,7 +41,7 @@
   roles:
     - hostname
     - ssh
-    - base
+    - mail_base
     - firewall
     - mta_sts
     - caddy
