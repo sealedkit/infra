@@ -1,5 +1,6 @@
 ---
 mail_hostname: mail.sealedkit.com
+system_hostname: "{{ mail_hostname }}"
 
 mail_domains:
   - sealedkit.com

@@ -1,8 +1,4 @@
 ---
-- name: Set the system hostname
-  ansible.builtin.hostname:
-    name: "{{ mail_hostname }}"
-
 - name: Preseed the Postfix debconf answers
   ansible.builtin.debconf:
     name: postfix

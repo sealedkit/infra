@@ -13,6 +13,7 @@
           vault.yml.example. Fill them in with
           "ansible-vault edit group_vars/leaf/vault.yml".
   roles:
+    - hostname
     - ssh
     - firewall
     - leaf_static
