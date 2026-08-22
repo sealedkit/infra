@@ -1,0 +1,34 @@
+[Unit]
+Description=Leaf server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=exec
+User=leaf
+Group=leaf
+StateDirectory=leaf
+WorkingDirectory=/var/lib/leaf
+EnvironmentFile=/etc/leaf/server.env
+ExecStart=/opt/leaf/bin/server
+Restart=on-failure
+RestartSec=5
+
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictNamespaces=true
+RestrictSUIDSGID=true
+LockPersonality=true
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

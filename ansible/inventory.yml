@@ -5,3 +5,7 @@ all:
       hosts:
         mail.sealedkit.com:
           ansible_user: debian
+    leaf:
+      hosts:
+        leaf.sealedkit.com:
+          ansible_user: debian

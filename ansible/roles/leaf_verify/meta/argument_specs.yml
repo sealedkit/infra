@@ -1,0 +1,17 @@
+---
+argument_specs:
+  main:
+    short_description: Check the certificate, the headers and the redirect from outside
+    options:
+      leaf_site_host:
+        type: str
+        required: true
+      leaf_app_host:
+        type: str
+        required: true
+      leaf_api_host:
+        type: str
+        required: true
+      leaf_www_host:
+        type: str
+        required: true

@@ -1,0 +1,54 @@
+---
+- name: Install the runtime
+  ansible.builtin.apt:
+    name: openjdk-21-jre-headless
+    state: present
+    update_cache: true
+
+- name: Create the service user
+  ansible.builtin.user:
+    name: leaf
+    system: true
+    home: /var/lib/leaf
+    create_home: false
+    shell: /usr/sbin/nologin
+
+- name: Create the directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - /opt/leaf
+    - /etc/leaf
+
+- name: Write server.env
+  ansible.builtin.template:
+    src: server.env.j2
+    dest: /etc/leaf/server.env
+    owner: root
+    group: root
+    mode: "0640"
+  notify: Restart the server
+
+- name: Install the unit
+  ansible.builtin.copy:
+    src: leaf-server.service
+    dest: /etc/systemd/system/leaf-server.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart the server
+
+- name: Enable the server
+  ansible.builtin.systemd_service:
+    name: leaf-server
+    enabled: true
+    daemon_reload: true
+
+- name: Look for a build to start
+  ansible.builtin.stat:
+    path: /opt/leaf/bin/server
+  register: leaf_build

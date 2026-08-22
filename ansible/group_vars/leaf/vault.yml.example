@@ -1,0 +1,8 @@
+---
+vault_leaf_s3:
+  bucket: REPLACE
+  endpoint: https://REPLACE.r2.cloudflarestorage.com
+  access_key_id: REPLACE
+  secret_access_key: REPLACE
+  region: auto
+  path_style: true

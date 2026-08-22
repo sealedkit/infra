@@ -1,0 +1,19 @@
+---
+leaf_site_host: sealedkit.com
+leaf_app_host: leaf.sealedkit.com
+leaf_api_host: leaf-api.sealedkit.com
+leaf_www_host: www.sealedkit.com
+
+leaf_s3: "{{ vault_leaf_s3 }}"
+
+caddy_caddyfile: Caddyfile-leaf.j2
+
+fail2ban_jails:
+  - sshd
+
+firewall_ports:
+  - port: 22
+  - port: 80
+  - port: 443
+  - port: 443
+    proto: udp

@@ -1,0 +1,17 @@
+---
+argument_specs:
+  main:
+    short_description: Install the server unit and the environment it is started with
+    options:
+      leaf_site_host:
+        type: str
+        required: true
+      leaf_app_host:
+        type: str
+        required: true
+      leaf_api_host:
+        type: str
+        required: true
+      leaf_s3:
+        type: dict
+        required: true

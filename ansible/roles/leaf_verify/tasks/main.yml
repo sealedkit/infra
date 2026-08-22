@@ -1,0 +1,44 @@
+---
+- name: Ask every host for a response
+  ansible.builtin.uri:
+    url: https://{{ item }}/
+    follow_redirects: none
+    status_code: [200, 301, 302, 404, 502, 503]
+  loop:
+    - "{{ leaf_site_host }}"
+    - "{{ leaf_app_host }}"
+    - "{{ leaf_api_host }}"
+    - "{{ leaf_www_host }}"
+  delegate_to: localhost
+  become: false
+  register: leaf_verify_responses
+  changed_when: false
+  check_mode: false
+
+- name: Assert the headers Caddy is answerable for are served everywhere
+  ansible.builtin.assert:
+    that:
+      - item.x_content_type_options | default('') == 'nosniff'
+      - item.referrer_policy | default('') == 'no-referrer'
+      - item.strict_transport_security | default('') is search('max-age=31536000')
+      - item.permissions_policy | default('') is search('camera=\(\)')
+    fail_msg: >-
+      https://{{ item.item }}/ answered {{ item.status }} without the headers
+      from ansible/templates/Caddyfile-leaf.j2. Caddy is either serving an older
+      config or not the one in front of this host.
+  loop: "{{ leaf_verify_responses.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+
+- name: Assert www redirects to the site host
+  ansible.builtin.assert:
+    that:
+      - leaf_verify_www.status == 301
+      - leaf_verify_www.location == 'https://' ~ leaf_site_host ~ '/'
+    fail_msg: >-
+      https://{{ leaf_www_host }}/ answered {{ leaf_verify_www.status }} pointing at
+      {{ leaf_verify_www.location | default('nothing') }} rather than redirecting to
+      https://{{ leaf_site_host }}/.
+  vars:
+    leaf_verify_www: >-
+      {{ leaf_verify_responses.results | selectattr('item', 'equalto', leaf_www_host) | first }}

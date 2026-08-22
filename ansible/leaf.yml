@@ -1,0 +1,21 @@
+---
+- name: Leaf server
+  hosts: leaf
+  become: true
+  pre_tasks:
+    - name: Assert the vault holds real secrets
+      ansible.builtin.assert:
+        that:
+          - vault_leaf_s3 is defined
+          - leaf_s3 | dict2items | selectattr('value', 'search', 'REPLACE') | list | length == 0
+        fail_msg: >-
+          group_vars/leaf/vault.yml still has the placeholders from
+          vault.yml.example. Fill them in with
+          "ansible-vault edit group_vars/leaf/vault.yml".
+  roles:
+    - ssh
+    - firewall
+    - caddy
+    - leaf
+    - fail2ban
+    - leaf_verify

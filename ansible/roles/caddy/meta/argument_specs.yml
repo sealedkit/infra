@@ -1,4 +1,8 @@
 ---
 argument_specs:
   main:
-    short_description: Install Caddy and serve the playbook's Caddyfile
+    short_description: Install Caddy and serve the group's Caddyfile
+    options:
+      caddy_caddyfile:
+        type: str
+        required: true

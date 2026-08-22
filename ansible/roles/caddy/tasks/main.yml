@@ -30,7 +30,7 @@
 
 - name: Write the Caddyfile
   ansible.builtin.template:
-    src: Caddyfile.j2
+    src: "{{ caddy_caddyfile }}"
     dest: /etc/caddy/Caddyfile
     mode: "0644"
     validate: caddy validate --adapter caddyfile --config %s
