@@ -8,6 +8,7 @@ Type=exec
 User=leaf
 Group=leaf
 StateDirectory=leaf
+StateDirectoryMode=0700
 WorkingDirectory=/var/lib/leaf
 EnvironmentFile=/etc/leaf/server.env
 ExecStart=/opt/leaf/bin/server
@@ -16,6 +17,7 @@ RestartSec=5
 
 NoNewPrivileges=true
 PrivateTmp=true
+PrivateUsers=true
 PrivateDevices=true
 ProtectSystem=strict
 ProtectHome=true
@@ -32,10 +34,16 @@ RestrictSUIDSGID=true
 RestrictRealtime=true
 LockPersonality=true
 MemoryDenyWriteExecute=true
+RemoveIPC=true
 CapabilityBoundingSet=
 SystemCallArchitectures=native
 SystemCallFilter=@system-service
+SystemCallFilter=~@resources
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
+SocketBindDeny=any
+SocketBindAllow=tcp:8080
+NoExecPaths=/
+ExecPaths=/opt/leaf/bin/server
 UMask=0077
 
 [Install]
