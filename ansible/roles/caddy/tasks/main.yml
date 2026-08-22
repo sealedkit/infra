@@ -34,10 +34,13 @@
     dest: /etc/caddy/Caddyfile
     mode: "0644"
     validate: caddy validate --adapter caddyfile --config %s
-  notify: Reload caddy
 
 - name: Enable caddy
   ansible.builtin.systemd_service:
     name: caddy
     state: started
     enabled: true
+
+- name: Load the Caddyfile into the running server
+  ansible.builtin.command: caddy reload --config /etc/caddy/Caddyfile
+  changed_when: false
