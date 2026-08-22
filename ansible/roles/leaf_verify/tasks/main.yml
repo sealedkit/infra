@@ -24,7 +24,7 @@
       - item.permissions_policy | default('') is search('camera=\(\)')
     fail_msg: >-
       https://{{ item.item }}/ answered {{ item.status }} without the headers
-      from ansible/templates/Caddyfile-leaf.j2. Caddy is either serving an older
+      from ansible/templates/Caddyfile-global.j2. Caddy is either serving an older
       config or not the one in front of this host.
   loop: "{{ leaf_verify_responses.results }}"
   loop_control:

@@ -6,3 +6,16 @@
 	renewal_window_ratio 0.5
 }
 
+(baseline_headers) {
+	header Cross-Origin-Embedder-Policy "require-corp"
+	header Cross-Origin-Opener-Policy "same-origin"
+	header Cross-Origin-Resource-Policy "same-origin"
+	header Origin-Agent-Cluster "?1"
+	header Permissions-Policy "accelerometer=(), ambient-light-sensor=(), attribution-reporting=(), autoplay=(), battery=(), bluetooth=(), browsing-topics=(), camera=(), clipboard-read=(), clipboard-write=(), compute-pressure=(), cross-origin-isolated=(), deferred-fetch=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=(), gamepad=(), geolocation=(), gyroscope=(), hid=(), identity-credentials-get=(), idle-detection=(), interest-cohort=(), join-ad-interest-group=(), keyboard-map=(), local-fonts=(), magnetometer=(), microphone=(), midi=(), otp-credentials=(), payment=(), picture-in-picture=(), private-state-token-issuance=(), private-state-token-redemption=(), publickey-credentials-create=(), publickey-credentials-get=(), run-ad-auction=(), screen-wake-lock=(), serial=(), shared-storage=(), shared-storage-select-url=(), smart-card=(), speaker-selection=(), storage-access=(), sync-xhr=(), unload=(), usb=(), web-share=(), window-management=(), xr-spatial-tracking=()"
+	header Referrer-Policy "no-referrer"
+	header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+	header X-Content-Type-Options "nosniff"
+	header X-Frame-Options "DENY"
+	header X-XSS-Protection "0"
+}
+
