@@ -1,0 +1,5 @@
+---
+# Vault files cannot be linted without the vault secret; without this they log decryption warnings.
+exclude_paths:
+  - group_vars/leaf/vault.yml
+  - group_vars/mail/vault.yml

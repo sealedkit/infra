@@ -7,6 +7,9 @@ fi
 
 cd "$(git rev-parse --show-toplevel)/ansible"
 if [ -x .venv/bin/ansible-lint ]; then
-  exec .venv/bin/ansible-lint
+  # On PATH rather than exec'd by path, or ansible-lint warns about the inactive venv.
+  PATH="$PWD/.venv/bin:$PATH"
+  export PATH
+  exec ansible-lint
 fi
 exec uv run ansible-lint
