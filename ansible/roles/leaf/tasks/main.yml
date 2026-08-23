@@ -36,6 +36,14 @@
     mode: "0644"
   notify: Restart the server
 
+- name: Install the admin wrapper
+  ansible.builtin.copy:
+    src: leaf-admin
+    dest: /usr/local/bin/leaf-admin
+    owner: root
+    group: root
+    mode: "0755"
+
 - name: Enable the server
   ansible.builtin.systemd_service:
     name: leaf-server
