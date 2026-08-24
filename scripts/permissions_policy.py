@@ -34,7 +34,8 @@ caddy_permissions_policy: >-
 LOCKED_BLOCK = re.compile(
     r"^caddy_permissions_policy: >-\n((?:[ \t]+\S.*\n)+)", re.MULTILINE
 )
-LOCKED_DIRECTIVE = re.compile(r"([a-z0-9-]+)=\(\)")
+DIRECTIVE_NAME = re.compile(r"[a-z0-9-]+")
+LOCKED_DIRECTIVE = re.compile(rf"({DIRECTIVE_NAME.pattern})=\(\)")
 
 
 def fetch_text(url):
@@ -134,6 +135,12 @@ def main():
             return fail(
                 f"{source} yielded {len(names)} features, expected >= "
                 f"{MIN_COUNTS[source]}. Parser is likely broken."
+            )
+        bogus = sorted(n for n in names if not DIRECTIVE_NAME.fullmatch(n))
+        if bogus:
+            return fail(
+                f"{source} yielded non-directive names: {' '.join(bogus)}. "
+                "Parser is likely broken."
             )
 
     upstream = sorted(set().union(*parsed.values()))
