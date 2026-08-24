@@ -1,0 +1,10 @@
+[project]
+name = "infra"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "ruff>=0.16.4",
+]
+
+[tool.ruff.lint]
+extend-select = ["I", "UP", "B", "SIM", "RUF"]
