@@ -9,15 +9,7 @@ if ! git diff --cached --quiet -- '*.py' pyproject.toml uv.lock; then
   uv run ruff format --check .
 fi
 
-if git diff --cached --quiet -- ansible; then
-  exit 0
+if ! git diff --cached --quiet -- ansible; then
+  cd "$root/ansible"
+  uv run ansible-lint
 fi
-
-cd "$root/ansible"
-if [ -x .venv/bin/ansible-lint ]; then
-  # On PATH rather than exec'd by path, or ansible-lint warns about the inactive venv.
-  PATH="$PWD/.venv/bin:$PATH"
-  export PATH
-  exec ansible-lint
-fi
-exec uv run ansible-lint
