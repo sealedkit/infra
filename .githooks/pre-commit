@@ -1,11 +1,19 @@
 #!/bin/sh
 set -e
 
+root="$(git rev-parse --show-toplevel)"
+
+if ! git diff --cached --quiet -- '*.py' pyproject.toml uv.lock; then
+  cd "$root"
+  uv run ruff check .
+  uv run ruff format --check .
+fi
+
 if git diff --cached --quiet -- ansible; then
   exit 0
 fi
 
-cd "$(git rev-parse --show-toplevel)/ansible"
+cd "$root/ansible"
 if [ -x .venv/bin/ansible-lint ]; then
   # On PATH rather than exec'd by path, or ansible-lint warns about the inactive venv.
   PATH="$PWD/.venv/bin:$PATH"
