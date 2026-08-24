@@ -97,8 +97,10 @@ def render_lock(names):
 def read_locked():
     try:
         text = LOCK_PATH.read_text()
-    except OSError:
+    except FileNotFoundError:
         return None
+    except OSError as error:
+        raise SystemExit(fail(f"cannot read {LOCK_RELATIVE}: {error}")) from error
     block = LOCKED_BLOCK.search(text)
     if not block:
         raise SystemExit(
@@ -146,7 +148,7 @@ def main():
     upstream = sorted(set().union(*parsed.values()))
     locked = read_locked()
     if locked is None and not write:
-        return fail(f"cannot read {LOCK_RELATIVE}")
+        return fail(f"{LOCK_RELATIVE} does not exist. Run --write to create it.")
     added = [n for n in upstream if n not in (locked or [])]
     gone = [n for n in (locked or []) if n not in upstream]
 
