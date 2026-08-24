@@ -2,7 +2,6 @@
 import argparse
 import base64
 import http.client
-import json
 import re
 import sys
 import urllib.request
@@ -49,49 +48,32 @@ def fetch_text(url):
 
 def parse_chromium(text):
     data = text.partition("data: [")[2]
-    out = {}
+    out = set()
     for block in re.findall(r"\{[^{}]*\}", data):
         name = re.search(r'permissions_policy_name:\s*"([^"]+)"', block)
         if not name:
             continue
         field = re.search(r"depends_on:\s*\[([^\]]*)\]", block)
-        depends_on = re.findall(r'"([^"]+)"', field.group(1) if field else "")
-        if TEST_ONLY_FLAG in depends_on:
+        if field and TEST_ONLY_FLAG in re.findall(r'"([^"]+)"', field.group(1)):
             continue
-        out[name.group(1)] = {
-            "isolated_context_only": bool(
-                re.search(r'visibility:\s*"IsolatedContext"', block)
-            ),
-            "depends_on": depends_on,
-        }
+        out.add(name.group(1))
     return out
 
 
 def parse_firefox(text):
-    out = {}
+    out = set()
     for array in ("sSupportedFeatures", "sExperimentalFeatures"):
         body = text.partition(f"{array}[] = {{")[2].partition("};")[0]
-        for name in re.findall(r'\{\s*"([^"]+)"', body):
-            out[name] = {"experimental": array == "sExperimentalFeatures"}
+        out.update(re.findall(r'\{\s*"([^"]+)"', body))
     return out
 
 
 def parse_webkit(text):
-    names = re.findall(r'constexpr auto \w+Token \{ "([^"]+)"_s \}', text)
-    return {name: {} for name in names}
+    return set(re.findall(r'constexpr auto \w+Token \{ "([^"]+)"_s \}', text))
 
 
 def parse_w3c(text):
-    out = {}
-    section = ""
-    for line in text.split("\n"):
-        heading = re.match(r"##\s+(.*)", line)
-        if heading:
-            section = heading.group(1).strip()
-        cell = re.match(r"\|\s*`([a-z0-9-]+)`\s*\|", line)
-        if cell:
-            out[cell.group(1)] = {"section": section}
-    return out
+    return set(re.findall(r"^\|\s*`([a-z0-9-]+)`\s*\|", text, re.MULTILINE))
 
 
 PARSERS = {
@@ -134,21 +116,9 @@ def collect():
     }
 
 
-def merge(parsed):
-    features = {}
-    for source, names in parsed.items():
-        for name, meta in names.items():
-            feature = features.setdefault(
-                name, {"name": name, "sources": [], "meta": {}}
-            )
-            feature["sources"].append(source)
-            feature["meta"][source] = meta
-    return [features[name] for name in sorted(features)]
-
-
 def main():
     parser = argparse.ArgumentParser()
-    mode = parser.add_mutually_exclusive_group()
+    mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--check", action="store_true")
     mode.add_argument("--write", action="store_true")
     args = parser.parse_args()
@@ -165,23 +135,7 @@ def main():
                 f"{MIN_COUNTS[source]}. Parser is likely broken."
             )
 
-    selected = merge(parsed)
-
-    if not args.check and not args.write:
-        print(
-            json.dumps(
-                {
-                    "generated_from": SOURCES,
-                    "counts": {s: len(n) for s, n in parsed.items()},
-                    "total": len(selected),
-                    "features": selected,
-                },
-                indent=2,
-            )
-        )
-        return 0
-
-    upstream = [feature["name"] for feature in selected]
+    upstream = sorted(set().union(*parsed.values()))
     locked = read_locked()
     if locked is None and args.check:
         return fail(f"cannot read {LOCK_RELATIVE}")
