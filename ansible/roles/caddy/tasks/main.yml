@@ -28,6 +28,15 @@
     state: present
     update_cache: true
 
+- name: Give quic-go the socket buffers it asks for
+  ansible.builtin.copy:
+    content: |
+      net.core.rmem_max = 7500000
+      net.core.wmem_max = 7500000
+    dest: /etc/sysctl.d/30-caddy-quic.conf
+    mode: "0644"
+  notify: Apply the socket buffers
+
 - name: Write the Caddyfile
   ansible.builtin.template:
     src: "{{ caddy_caddyfile }}"
