@@ -49,6 +49,8 @@ SystemCallFilter=~@privileged
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
 SocketBindDeny=any
 SocketBindAllow=tcp:8080
+# Outbound DNS binds a UDP socket.
+SocketBindAllow=udp
 NoExecPaths=/
 ExecPaths=/opt/leaf/bin/server /usr/lib /lib64
 UMask=0077
