@@ -1,0 +1,4 @@
+---
+argument_specs:
+  main:
+    short_description: Keep the journal on disk and discard it after seven days

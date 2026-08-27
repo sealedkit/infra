@@ -40,6 +40,7 @@
                           + mail_accounts | map(attribute='address') | list) }}
   roles:
     - hostname
+    - journald
     - ssh
     - mail_base
     - firewall

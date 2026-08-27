@@ -1,0 +1,13 @@
+---
+- name: Create the journald drop-in directory
+  ansible.builtin.file:
+    path: /etc/systemd/journald.conf.d
+    state: directory
+    mode: "0755"
+
+- name: Write the journald retention drop-in
+  ansible.builtin.copy:
+    src: 10-retention.conf
+    dest: /etc/systemd/journald.conf.d/10-retention.conf
+    mode: "0644"
+  notify: Restart journald

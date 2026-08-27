@@ -3,12 +3,14 @@
 {{ leaf_api_host }} {
 	encode zstd gzip
 	reverse_proxy 127.0.0.1:8080
+	import access_log
 	import baseline_headers
 }
 
 {{ leaf_app_host }} {
 	encode zstd gzip
 	reverse_proxy 127.0.0.1:8080
+	import access_log
 	import baseline_headers
 }
 
@@ -25,10 +27,12 @@
 		redir / https://{{ leaf_app_host }}/ temporary
 		respond 404
 	}
+	import access_log
 	import baseline_headers
 }
 
 {{ leaf_www_host }} {
 	redir https://{{ leaf_site_host }}{uri} permanent
+	import access_log
 	import baseline_headers
 }

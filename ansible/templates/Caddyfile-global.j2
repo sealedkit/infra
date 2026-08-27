@@ -9,6 +9,10 @@
 	}
 }
 
+(access_log) {
+	log
+}
+
 (baseline_headers) {
 	header ?Content-Security-Policy "default-src 'none'; {{ caddy_csp_restrictions }}"
 	header Cross-Origin-Embedder-Policy "require-corp"
