@@ -53,15 +53,24 @@ def variables(group):
     return merged
 
 
+def trailing_newlines(text):
+    return len(text) - len(text.rstrip("\n"))
+
+
+# ansible.builtin.template drops the trailing newline of an included template and
+# restores only the one the outer template ends with, so mirror that here or the
+# file this validates is not the file Ansible writes.
 def render(environment, group):
     values = variables(group)
     if "caddy_caddyfile" not in values:
         raise SystemExit(
             fail(f"group_vars/{group} does not name a Caddyfile template.")
         )
-    return values["caddy_caddyfile"], environment.get_template(
-        values["caddy_caddyfile"]
-    ).render(values)
+    name = values["caddy_caddyfile"]
+    source = (TEMPLATES / name).read_text()
+    rendered = environment.get_template(name).render(values)
+    missing = trailing_newlines(source) - trailing_newlines(rendered)
+    return name, rendered + "\n" * max(missing, 0)
 
 
 def main():
@@ -88,7 +97,7 @@ def main():
     environment = Environment(
         loader=FileSystemLoader(TEMPLATES),
         undefined=StrictUndefined,
-        keep_trailing_newline=True,
+        trim_blocks=True,
     )
 
     with tempfile.TemporaryDirectory() as directory:

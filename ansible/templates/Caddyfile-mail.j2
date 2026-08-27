@@ -1,4 +1,5 @@
-{% include 'Caddyfile-global.j2' %}
+{% include 'Caddyfile-global.j2' +%}
+
 {{ mail_hostname }} {
 	redir / https://{{ mail_origin }}/ 308
 	respond 404
