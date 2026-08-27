@@ -6,9 +6,6 @@ argument_specs:
       leaf_app_host:
         type: str
         required: true
-      leaf_api_host:
-        type: str
-        required: true
       leaf_s3:
         type: dict
         required: true

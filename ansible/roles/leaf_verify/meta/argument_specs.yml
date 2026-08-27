@@ -9,9 +9,6 @@ argument_specs:
       leaf_app_host:
         type: str
         required: true
-      leaf_api_host:
-        type: str
-        required: true
       leaf_www_host:
         type: str
         required: true

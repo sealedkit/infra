@@ -7,7 +7,6 @@
   loop:
     - "{{ leaf_site_host }}"
     - "{{ leaf_app_host }}"
-    - "{{ leaf_api_host }}"
     - "{{ leaf_www_host }}"
   delegate_to: localhost
   become: false

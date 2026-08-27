@@ -101,8 +101,6 @@ leaf: &origin
   - *no_mail_mx
   - *no_mail_txt
 
-leaf-api: *origin
-
 mail:
   - &mail_a
     ttl: 300

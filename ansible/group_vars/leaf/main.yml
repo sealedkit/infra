@@ -2,7 +2,6 @@
 leaf_site_host: sealedkit.com
 leaf_app_host: leaf.sealedkit.com
 system_hostname: "{{ leaf_app_host }}"
-leaf_api_host: leaf-api.sealedkit.com
 leaf_www_host: www.sealedkit.com
 
 leaf_s3: "{{ vault_leaf_s3 }}"

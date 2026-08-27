@@ -1,11 +1,4 @@
 {% include 'Caddyfile-global.j2' %}
-{{ leaf_api_host }} {
-	encode zstd gzip
-	reverse_proxy 127.0.0.1:8080
-	import access_log
-	import baseline_headers
-}
-
 {{ leaf_app_host }} {
 	encode zstd gzip
 	reverse_proxy 127.0.0.1:8080
