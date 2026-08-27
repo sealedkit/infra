@@ -1,4 +1,13 @@
 ---
 - name: Set the system hostname
   ansible.builtin.hostname:
-    name: "{{ system_hostname }}"
+    name: "{{ hostname_short }}"
+
+- name: Let the host resolve its own name without a DNS lookup
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: ^127\.0\.1\.1\s
+    line: "127.0.1.1\t{{ system_fqdn }}\t{{ hostname_short }}"
+    owner: root
+    group: root
+    mode: "0644"

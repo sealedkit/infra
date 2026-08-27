@@ -1,0 +1,2 @@
+---
+hostname_short: "{{ system_fqdn.split('.') | first }}"
