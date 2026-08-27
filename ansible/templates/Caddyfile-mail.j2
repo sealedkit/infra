@@ -1,5 +1,4 @@
 {% include 'Caddyfile-global.j2' %}
-
 {{ mail_hostname }} {
 	redir / https://{{ mail_origin }}/ 308
 	respond 404
@@ -7,7 +6,6 @@
 	import baseline_headers
 }
 {% for domain in mail_domains %}
-
 mta-sts.{{ domain }} {
 	handle /.well-known/mta-sts.txt {
 		root * {{ mail_mtasts_root }}
@@ -21,4 +19,4 @@ mta-sts.{{ domain }} {
 	import access_log
 	import baseline_headers
 }
-{% endfor %}
+{% endfor -%}

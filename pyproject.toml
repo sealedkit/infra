@@ -3,6 +3,8 @@ name = "infra"
 version = "0.1.0"
 requires-python = ">=3.13"
 dependencies = [
+    "jinja2>=3.1.6",
+    "pyyaml>=6.0.3",
     "ruff>=0.16.4",
 ]
 

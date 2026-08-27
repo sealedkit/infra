@@ -1,15 +1,17 @@
 #!/bin/sh
 set -e
 
-root="$(git rev-parse --show-toplevel)"
+cd "$(git rev-parse --show-toplevel)"
 
 if ! git diff --cached --quiet -- '*.py' pyproject.toml uv.lock; then
-  cd "$root"
   uv run ruff check .
   uv run ruff format --check .
 fi
 
 if ! git diff --cached --quiet -- ansible; then
-  cd "$root/ansible"
-  uv run ansible-lint
+  (cd ansible && uv run ansible-lint)
+fi
+
+if ! git diff --cached --quiet -- ansible/templates ansible/group_vars ansible/roles/caddy; then
+  uv run python scripts/caddyfile.py
 fi

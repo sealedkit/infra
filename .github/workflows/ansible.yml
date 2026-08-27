@@ -4,12 +4,14 @@ on:
   pull_request:
     paths:
       - ansible/**
+      - scripts/caddyfile.py
       - .github/workflows/ansible.yml
   push:
     branches:
       - main
     paths:
       - ansible/**
+      - scripts/caddyfile.py
       - .github/workflows/ansible.yml
 
 defaults:
@@ -32,3 +34,29 @@ jobs:
       - run: uv run ansible-galaxy collection install -r requirements.yml
       - run: uv run ansible-playbook mail.yml leaf.yml --syntax-check
       - run: uv run ansible-lint
+
+  caddyfile:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - name: Install the caddy the role deploys
+        run: |
+          version="$(uv run python scripts/caddyfile.py --print-version)"
+          base="https://github.com/caddyserver/caddy/releases/download/v${version}"
+          curl -fsSL -O "${base}/caddy_${version}_linux_amd64.tar.gz"
+          curl -fsSL -O "${base}/caddy_${version}_checksums.txt"
+          grep " caddy_${version}_linux_amd64.tar.gz$" "caddy_${version}_checksums.txt" | sha512sum -c -
+          tar -xzf "caddy_${version}_linux_amd64.tar.gz" caddy
+          sudo install -m 0755 caddy /usr/local/bin/caddy
+      - run: uv run python scripts/caddyfile.py
