@@ -4,12 +4,12 @@
     ttl: 300
     type: A
     values:
-      - 148.113.201.252
+      - &origin_ipv4 148.113.201.252
   - &origin_aaaa
     ttl: 300
     type: AAAA
     values:
-      - 2607:5300:205:200::7e21
+      - &origin_ipv6 2607:5300:205:200::7e21
   - type: CAA
     values:
       - flags: 0
@@ -35,6 +35,10 @@
         alpn:
           - h2
           - h3
+        ipv4hint:
+          - *origin_ipv4
+        ipv6hint:
+          - *origin_ipv6
       svcpriority: 1
       targetname: .
   - type: MX
@@ -107,12 +111,12 @@ mail:
     ttl: 300
     type: A
     values:
-      - 51.222.24.101
+      - &mail_ipv4 51.222.24.101
   - &mail_aaaa
     ttl: 300
     type: AAAA
     values:
-      - 2607:5300:205:200::531e
+      - &mail_ipv6 2607:5300:205:200::531e
   - &mail_caa
     type: CAA
     values:
@@ -138,6 +142,10 @@ mail:
       svcparams:
         alpn:
           - h2
+        ipv4hint:
+          - *mail_ipv4
+        ipv6hint:
+          - *mail_ipv6
       svcpriority: 1
       targetname: .
   - *no_mail_mx
