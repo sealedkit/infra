@@ -28,6 +28,7 @@
         tag: issuewild
         value: ';'
   - &origin_https
+    ttl: 300
     type: HTTPS
     value:
       svcparams:
@@ -131,6 +132,7 @@ mail:
         tag: issuewild
         value: ';'
   - &mail_https
+    ttl: 300
     type: HTTPS
     value:
       svcparams:
